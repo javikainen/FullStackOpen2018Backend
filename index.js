@@ -107,6 +107,30 @@ app.post('/api/persons', (req, res) => {
     })
 })
 
+app.put('/api/persons/:id', (req, res) => {
+  const body = req.body
+
+  if (body.name === undefined) {
+    return res.status(400).json({ error: 'Missing field: name' })
+  }
+  if (body.number === undefined) {
+    return res.status(400).json({ error: 'Missing field: number' })
+  }
+
+  const newPerson = {
+      name: body.name,
+      number: body.number,
+  }
+
+  Person
+    .findOneAndUpdate({ _id: req.params.id }, newPerson, { new: true})
+    .then(updatedPerson => {
+      res.json(Person.format(updatedPerson))
+    })
+    .catch(error => {
+      res.status(400).send({ error: 'malformatted id'})
+    })
+})
 
 const generateId = () => {
   return Math.floor(Math.random() * Math.floor(2**32));

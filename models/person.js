@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 
 const url = 'mongodb://user:passwd@ds139883.mlab.com:39883/fullstack-phonebook'
+mongoose.set('useFindAndModify', false)
+
 
 mongoose.connect(url, {useNewUrlParser: true})
 
