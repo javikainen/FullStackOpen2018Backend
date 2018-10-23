@@ -43,6 +43,9 @@ app.get('/api/persons', (req, res) => {
     .then(people => {
       res.json(people.map(Person.format))
     })
+    .catch(error => {
+      console.log(error)
+    })
 })
 
 app.get('/info', (req, res) => {
@@ -82,20 +85,24 @@ app.post('/api/persons', (req, res) => {
   if (body.number === undefined) {
     return res.status(400).json({ error: 'Missing field: number' })
   }
-  if (persons.find(person => person.name === body.name)) {
-    return res.status(400).json({ error: 'Name must be unique' })
-  }
+  // if (persons.find(person => person.name === body.name)) {
+  //   return res.status(400).json({ error: 'Name must be unique' })
+  // }
 
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: generateId()
-  }
-
-  persons = persons.concat(person)
-
-  res.json(person)
+  })
+  person
+    .save()
+    .then(response => {
+      res.json(Person.format(response))
+    })
+    .catch(error => {
+      console.log(error)
+    })
 })
+
 
 const generateId = () => {
   return Math.floor(Math.random() * Math.floor(2**32));
