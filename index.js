@@ -8,7 +8,7 @@ morgan.token('reqbody', (req) => {
   return JSON.stringify(req.body)
 })
 
-app.use(cors)
+app.use(cors())
 app.use(bodyParser.json())
 app.use(morgan(':method :url :reqbody :status :res[content-length] - :response-time ms'))
 
