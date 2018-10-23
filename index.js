@@ -14,29 +14,6 @@ app.use(bodyParser.json())
 app.use(morgan(':method :url :reqbody :status :res[content-length] - :response-time ms'))
 app.use(express.static('build'))
 
-let persons = [
-  {
-    "name": "Arto Hellas",
-    "number": "040-123456",
-    "id": 1
-  },
-  {
-    "name": "Martti Tienari",
-    "number": "040-123456",
-    "id": 2
-  },
-  {
-    "name": "Arto Järvinen",
-    "number": "040-123456",
-    "id": 3
-  },
-  {
-    "name": "Lea Kutvonen",
-    "number": "040-123456",
-    "id": 4
-  }
-]
-
 app.get('/api/persons', (req, res) => {
   Person
     .find({}, {__v: 0})
@@ -49,24 +26,37 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-  const page =  `
-  <p>
-    Puhelinluettelossa on ${persons.length} henkilön tiedot
-  </p>
-  <p>
-    ${Date()}
-  </p>`
-  res.send(page)
+  Person
+    .find({}, {__v: 0})
+    .then(people => {
+      const page =  `
+      <p>
+        Puhelinluettelossa on ${people.length} henkilön tiedot
+      </p>
+      <p>
+        ${Date()}
+      </p>`
+      res.send(page)
+    })
+    .catch(error => {
+      console.log(error)
+    })
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find(person => person.id === id)
-  if (person) {
-    res.json(person)
-  } else {
-    res.status(404).end()
-  }
+  Person
+    .find({ _id: req.params.id}, {__v: 0})
+    .then(person => {
+      console.log(person[0])
+      if (person[0]) {
+        res.json(Person.format(person[0]))
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => {
+      res.status(400).send({ error: 'malformatted id'})
+    })
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -131,18 +121,6 @@ app.put('/api/persons/:id', (req, res) => {
       res.status(400).send({ error: 'malformatted id'})
     })
 })
-
-const generateId = () => {
-  return Math.floor(Math.random() * Math.floor(2**32));
-}
-
-const formatPerson = (person) => {
-  return {
-    name: person.name,
-    number: person.number,
-    id: person._id
-  }
-}
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
