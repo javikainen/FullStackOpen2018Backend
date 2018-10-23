@@ -3,6 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
 
 morgan.token('reqbody', (req) => {
   return JSON.stringify(req.body)
@@ -37,7 +38,11 @@ let persons = [
 ]
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person
+    .find({}, {__v: 0})
+    .then(people => {
+      res.json(people.map(formatPerson))
+    })
 })
 
 app.get('/info', (req, res) => {
@@ -94,6 +99,14 @@ app.post('/api/persons', (req, res) => {
 
 const generateId = () => {
   return Math.floor(Math.random() * Math.floor(2**32));
+}
+
+const formatPerson = (person) => {
+  return {
+    name: person.name,
+    number: person.number,
+    id: person._id
+  }
 }
 
 const PORT = process.env.PORT || 3001
