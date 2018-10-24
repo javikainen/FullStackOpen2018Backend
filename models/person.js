@@ -8,7 +8,7 @@ const url = process.env.MONGODB_URI
 
 mongoose.set('useFindAndModify', false)
 
-mongoose.connect(url, {useNewUrlParser: true})
+mongoose.connect(url, { useNewUrlParser: true })
 
 const personSchema = new mongoose.Schema({
   name: String,

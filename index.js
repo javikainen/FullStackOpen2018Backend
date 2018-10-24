@@ -16,7 +16,7 @@ app.use(express.static('build'))
 
 app.get('/api/persons', (req, res) => {
   Person
-    .find({}, {__v: 0})
+    .find({}, { __v: 0 })
     .then(people => {
       res.json(people.map(Person.format))
     })
@@ -27,7 +27,7 @@ app.get('/api/persons', (req, res) => {
 
 app.get('/info', (req, res) => {
   Person
-    .find({}, {__v: 0})
+    .find({}, { __v: 0 })
     .then(people => {
       const page =  `
       <p>
@@ -45,7 +45,7 @@ app.get('/info', (req, res) => {
 
 app.get('/api/persons/:id', (req, res) => {
   Person
-    .find({ _id: req.params.id}, {__v: 0})
+    .find({ _id: req.params.id }, { __v: 0 })
     .then(person => {
       console.log(person[0])
       if (person[0]) {
@@ -54,19 +54,19 @@ app.get('/api/persons/:id', (req, res) => {
         res.status(404).end()
       }
     })
-    .catch(error => {
-      res.status(400).send({ error: 'malformatted id'})
+    .catch(() => {
+      res.status(400).send({ error: 'malformatted id' })
     })
 })
 
 app.delete('/api/persons/:id', (req, res) => {
   Person
     .findOneAndDelete({ _id: req.params.id })
-    .then(result => {
+    .then(() => {
       res.status(204).end()
     })
-    .catch(error => {
-      res.status(400).send({ error: 'malformatted id'})
+    .catch(() => {
+      res.status(400).send({ error: 'malformatted id' })
     })
 })
 
@@ -80,7 +80,7 @@ app.post('/api/persons', (req, res) => {
     return res.status(400).json({ error: 'Missing field: number' })
   }
   Person
-    .find({ name: body.name}, {__v: 0})
+    .find({ name: body.name }, { __v: 0 })
     .then(result => {
       if (result.length === 0) {
         const person = new Person({
@@ -115,17 +115,17 @@ app.put('/api/persons/:id', (req, res) => {
   }
 
   const newPerson = {
-      name: body.name,
-      number: body.number,
+    name: body.name,
+    number: body.number,
   }
 
   Person
-    .findOneAndUpdate({ _id: req.params.id }, newPerson, { new: true})
+    .findOneAndUpdate({ _id: req.params.id }, newPerson, { new: true })
     .then(updatedPerson => {
       res.json(Person.format(updatedPerson))
     })
-    .catch(error => {
-      res.status(400).send({ error: 'malformatted id'})
+    .catch(() => {
+      res.status(400).send({ error: 'malformatted id' })
     })
 })
 
