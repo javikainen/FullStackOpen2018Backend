@@ -79,18 +79,25 @@ app.post('/api/persons', (req, res) => {
   if (body.number === undefined) {
     return res.status(400).json({ error: 'Missing field: number' })
   }
-  // if (persons.find(person => person.name === body.name)) {
-  //   return res.status(400).json({ error: 'Name must be unique' })
-  // }
-
-  const person = new Person({
-    name: body.name,
-    number: body.number,
-  })
-  person
-    .save()
-    .then(response => {
-      res.json(Person.format(response))
+  Person
+    .find({ name: body.name}, {__v: 0})
+    .then(result => {
+      if (result.length === 0) {
+        const person = new Person({
+          name: body.name,
+          number: body.number,
+        })
+        person
+          .save()
+          .then(response => {
+            res.json(Person.format(response))
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      } else {
+        res.status(400).json({ error: 'Name must be unique' })
+      }
     })
     .catch(error => {
       console.log(error)
